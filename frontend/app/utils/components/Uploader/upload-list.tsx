@@ -39,7 +39,7 @@ export default function UploadList({
   const [fileList, setFileList] = useState<FileTableColumns[]>([]);
 
   useEffect(() => {
-    if (allData.length && uploadList.length) {
+    if (uploadList.length) {
       const fileteredList = uploadList.filter(
         (u) => u.status === FileStatus.STARTED || u.status === FileStatus.FAILED
       );
@@ -66,13 +66,6 @@ export default function UploadList({
         };
       });
       setFileList(fileStatusList);
-
-      // const isInProgress: { [key: number]: boolean } = {};
-      // for (let index = 0; index < fileStatusList.length; index++) {
-      //   const file = fileStatusList[index];
-      //   isInProgress[file.id] = file.upload_status.progress > 0;
-      // }
-      // setIsUploading(isInProgress);
     }
   }, [uploadList, allData]);
 
