@@ -1,0 +1,45 @@
+services:
+  database:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+
+  tus:
+    build: ./tus
+    ports:
+      - 8080:8080
+    volumes:
+      - tus-local-file-storage:/srv/tus-data
+    command:
+      ["-port=8080", "-hooks-dir=/srv/tus-hooks", "-upload-dir=/srv/tus-data"]
+
+  backend:
+    build: ./backend
+    ports:
+      - 80:80
+    depends_on:
+      - database
+      - tus
+    env_file:
+      - .env
+
+  frontend:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    environment:
+      NEXT_PUBLIC_API_BACKEND_URL: ${BACKEND_URL}
+      NEXT_PUBLIC_API_FRONTEND_URL: ${FRONTEND_URL}
+      NEXT_PUBLIC_API_TUS_SERVER_PATH: ${TUS_SERVER_PATH}
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
+  tus-local-file-storage:
